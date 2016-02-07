@@ -20,10 +20,36 @@ body {
 }
 #content-text {
     font-weight: bold;
-    font-size: 2em;
+    font-size: 5em;
 }
 
 .fixture-text {
     /* font-weight: bold; */
-    font-size: 1em;
+    font-size: 2em;
 }
+
+.tournament-name-text {
+    /* font-weight: bold; */
+    font-size: 2.5em;
+}
+
+.finished {
+    /* font-weight: bold; */
+    color:red;
+}
+
+.in-game {
+    /* font-weight: bold; */
+    color:#1db8f0;
+}
+
+.not-started {
+    /* font-weight: bold; */
+    color:white;
+}
+
+.minutes-text{
+	font-size: 1em;
+	color:yellow;
+}
+

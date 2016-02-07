@@ -16,7 +16,8 @@ window.onload = function() {
     mainPage.addEventListener("click", function() {
         var contentText = document.querySelector('#content-text');
 
-        contentText.innerHTML = (contentText.innerHTML === "Basic") ? "Tizen" : "Basic";
+        contentText.innerHTML = "";
+        //contentText.style.display = "none";
         
         getLigue();
     });
@@ -25,9 +26,10 @@ window.onload = function() {
 
 
 
-var API_BASE = "http://192.168.1.128:3000/golesapi/";
+var API_BASE = "http://goles.eu-gb.mybluemix.net/golesapi/";
 var getLigueEndpoint = "nextFixtures";
 
+var MATCH_STATES = { FINISHED:3, IN_GAME:1, NOT_STARTED:0 };
 
 function getLigue(){
 	//console.log("Hi!");
@@ -56,6 +58,7 @@ function getLigue(){
 	     readFixtures(fullPath);
 	   },
 	   onfailed: function(id, error) {
+		   document.querySelector('#content-text').innerHTML = "ERROR <br> :(";
 	     console.log('Failed with id: ' + id + ', error name: ' + error.name);
 	   }
 	 };
@@ -63,35 +66,6 @@ function getLigue(){
 	 // Starts downloading the file from the Web with the corresponding callbacks.
 	 var downloadRequest = new tizen.DownloadRequest(API_BASE+getLigueEndpoint, "documents");
 	 var downloadId = tizen.download.start(downloadRequest, listener);
-	
-	//$("body").html("");
-	/*
-	$.ajax({
-		url:API_BASE+getLigueEndpoint,
-		type:"POST",
-		data:'{"appId":2,"idLeague":1}',
-		contentType:"application/json; charset=utf-8",
-		dataType:"json"
-	}).done(function( data ) {
-		console.log( data );
-		$("body").html("HOLA!");
-		
-		var nextFixture = data.nextFixturesList[0];
-		var name = nextFixture.fixtureName[0].description;
-		var nextMatches = nextFixture.fixtureMatchList;
-		for(i in nextMatches)
-		{
-			var visitor = nextMatches[i].teamVisitor;
-			var local = nextMatches[i].teamLocal;
-			var score = nextMatches[i].score;
-			console.log(local+score+visitor);
-			$("body").append("<br><span class=content_text>" + local + " "+score+" " + visitor + "</span>");
-		}
-	}).fail(function(err, status){
-		$("body").append(err);
-		console.log(err);
-	});
-	*/
 }
 
 
@@ -105,21 +79,47 @@ function readFixtures(fullPath)
 		            console.log("The file content " + str);
 		            
 		            var resultTxt = document.querySelector("#result");
-		            resultTxt.innerHTML = "";
+		            resultTxt.innerHTML = "<br><br><br>";
 		             
 		            var data = JSON.parse(str);
 		             
 		            var nextFixture = data.nextFixturesList[0];
-					var name = nextFixture.fixtureName[0].description;
+					var name = nextFixture.tournamentName[0].description +"<br>"+ nextFixture.fixtureName[0].description;
 					var nextMatches = nextFixture.fixtureMatchList;
+					
+					resultTxt.innerHTML += "<span class='tournament-name-text'>"+name+"</span>";
 					for(i in nextMatches)
 					{
 						var visitor = nextMatches[i].teamVisitor;
 						var local = nextMatches[i].teamLocal;
 						var score = nextMatches[i].score;
-						console.log(local+score+visitor);
-						resultTxt.innerHTML += "<br><span class=fixture-text>" + local + " "+score+" " + visitor + "</span>";
+						var status = nextMatches[i].matchState;
+						var minutes = nextMatches[i].minutes || "";
+						//console.log(local+score+visitor);
+						
+						var style = "";
+						
+						switch (status) {
+						case MATCH_STATES.FINISHED:
+							style = "finished";
+							break;
+							
+						case MATCH_STATES.IN_GAME:
+							style = "in-game";
+							break;
+							
+						case MATCH_STATES.NOT_STARTED:
+							style = "not-started";
+							break;
+
+						default:
+							break;
+						}
+						
+						resultTxt.innerHTML += "<br><br><span class='fixture-text "+style+"'>" + local + " "+score+" " + visitor + " </span> <span class='minutes-text'>"+minutes+"</span>";
 					}
+					
+					resultTxt.innerHTML += "<br><br><br><br><br><br>";
 					
 					// Finished, clean
 					f.deleteFile(fullPath, function() {
