@@ -76,7 +76,8 @@ function showFixture(data, i)
 		var status = nextMatches[i].matchState;
 		var tv = nextMatches[i].listTV;
 		var date = nextMatches[i].dateMatch;
-		date = moment(date).lang(navigator.language).calendar();
+		// I subtract 8 hours to fix bad time (it could be unnecessary on your clock..)
+		date = moment(date).subtract(8, 'hours').lang(navigator.language).calendar();
 		//console.log(local+score+visitor);
 		
 		var style = "";
@@ -186,31 +187,6 @@ function nextFixture()
 function prevFixture()
 {
 	ACT_FIXTURE = (ACT_FIXTURE - 1) % actFixtures.nextFixturesList.length;
+	ACT_FIXTURE = Math.abs(ACT_FIXTURE);
 }
-
-function bezerInit()
-{
-	// BEZEL SCROLL
-	var page = document.getElementById("main"),
-	element = document.getElementById("sectionchanger"),
-	sectionChanger, idx=1;
-	
-	page.addEventListener("pageshow", function() {
-	   /* Create the SectionChanger object */
-	   sectionChanger = tau.widget.SectionChanger(element, {
-	      circular: true,
-	      orientation: "horizontal",
-	      useBouncingEffect: true
-	   });
-	});
-	
-	page.addEventListener("pagehide", function() {
-	   /* Release the object */
-	   sectionChanger.destroy();
-	});
-}
-
-
-
-
 
